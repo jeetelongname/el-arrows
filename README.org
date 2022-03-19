@@ -1,0 +1,3 @@
+#+TITLE: Arrows
+
+A set of Threading macro's blatantly rewritten from [[https://github.com/nightfly19/cl-arrows][cl-arrows]]
