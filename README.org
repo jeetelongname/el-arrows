@@ -11,10 +11,12 @@ A set of Threading macro's blatantly rewritten from [[https://github.com/nightfl
 - [ ] add an [[https://hexdocs.pm/elixir/1.13/IO.html#inspect/2][inspect function similar to elixirs]] for easier debugging
 ** Arrows to implement
 - [ ] nil short circuiting arrows, these will return nil if any of the forms
-  return nil
+  return nil.
 
 
 * Reference
+** Macros
+
 | Macro name | Description                                 | Nickname      |
 |------------+---------------------------------------------+---------------|
 | =arr->=    | argument first. Identical to =thread-first= | tip           |
@@ -22,8 +24,16 @@ A set of Threading macro's blatantly rewritten from [[https://github.com/nightfl
 | =arr-<>=   | argument first with placeholders            | diamond wand  |
 | =arr-<>>=  | argument last with placeholders             | diamond spear |
 
+
 each of them has a =fn= variant which allows for "curried" like function syntax
 they take the name of =arr-fn-NAME= so for example =arr-fn-<>>=
+
+** Functions
+
+| Function name | Description                                                              | arguments                             |
+|---------------+--------------------------------------------------------------------------+---------------------------------------|
+| =arr-inspect= | a way to quickly print out the value in a pipeline without disrupting it | =value &optional &key print-fn label= |
+|               |                                                                          |                                       |
 
 * Examples
 ** Simple threading
@@ -32,7 +42,6 @@ here we are just pushing a number through a contrived pipeline
 (arr-> 8 (1+) (number-to-string) (string-pad 5) (string-pad 9 nil t))
 #+end_src
 
-#+RESULTS:
 : "     9      "
 
 Here we are using =->>= to pass this list in as the last argument of these maps
@@ -43,7 +52,6 @@ and filters.
         (seq-filter #'cl-evenp))
 #+end_src
 
-#+RESULTS:
 | 2 | 4 | 6 |
 
 ** placeholder example
@@ -58,7 +66,6 @@ come into play.
          (seq-reduce #'+ <> 0))
 #+end_src
 
-#+RESULTS:
 : 12
 
 Here =<>= is a placeholder meaning our value is passed into that spot, this
@@ -76,16 +83,14 @@ All arrow macro's have a =fn= variant
 (seq-map (arr-fn-> (1+) (number-to-string)) '(1 2 3))
 #+end_src
 
-#+RESULTS:
 | 2 | 3 | 4 |
 
 *** Lambda short hands
-as a side effect this allows for lambda short hands without the need to use the
-entire lambda syntactic form. This is not as nice nor as flexible as something
+as a side effect this allows for short functions without the need for the full
+lambda syntax. This is not as nice nor as flexible as something
 like [[https://github.com/cadadr/elisp#dollarel][dollar.el]] but still is worth mentioning IMHO
 #+begin_src emacs-lisp
 (seq-map (arr-fn-<> (* <> <>)) '(2 3 4))
 #+end_src
 
-#+RESULTS:
 | 4 | 9 | 16 |
