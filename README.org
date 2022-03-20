@@ -5,6 +5,7 @@ A set of Threading macro's blatantly rewritten from [[https://github.com/nightfl
 * Roadmap
 - [-] Formalise direction
 - [ ] find more arrow idea's (this is now a small obsession)
+- [ ] Implement [[https://srfi.schemers.org/srfi-197/srfi-197.html][srfi 197]]
 - [ ] Implement arrows from the [[https://lexi-lambda.github.io/threading/][racket threading library]]
 - [ ] Implement arrows from the [[https://github.com/rplevy/swiss-arrows][swiss arrows library]]
 - [ ] add an [[https://hexdocs.pm/elixir/1.13/IO.html#inspect/2][inspect function similar to elixirs for easier debugging]]
