@@ -20,6 +20,10 @@
 ;;; Code:
 (require 'cl-lib)
 
+
+;;; Normal threading macro's
+
+;;;;;; Internal
 (defun arr--simple-inserter (insert-fun)
   "Takes an INSERT-FUN. will return a builder function used to expand pipeline."
   (lambda (acc next)
@@ -37,6 +41,7 @@
   "Insert ARG into the list form SURROUND as its last argument."
   (append surround (list arg)))
 
+;;;; Macro's
 ;;;###autoload
 (defmacro arr-> (initial-form &rest forms)
   "Insert INITIAL-FORM as first argument into the first of FORMS.
@@ -56,7 +61,9 @@ Identical in functionality to the builtin `thread-last'"
              :initial-value initial-form))
 
 
+
 ;;; Diamond macro's
+;;;; Internal
 (defun arr--diamond-inserter (insert-fun)
   "Takes an INSERT-FUN. will return a builder function used to expand pipeline.
 Takes into account placeholders."
