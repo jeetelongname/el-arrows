@@ -37,6 +37,7 @@
   "Insert ARG into the list form SURROUND as its last argument."
   (append surround (list arg)))
 
+;;;###autoload
 (defmacro arr-> (initial-form &rest forms)
   "Insert INITIAL-FORM as first argument into the first of FORMS.
 The result into the next, etc., before evaluation.
@@ -46,6 +47,7 @@ Identical in functionality to the builtin `thread-first'"
              forms
              :initial-value initial-form))
 
+;;;###autoload
 (defmacro arr->> (initial-form &rest forms)
   "Like ->, but the INITIAL-FORM are inserted as last argument in FORMS.
 Identical in functionality to the builtin `thread-last'"
@@ -53,6 +55,8 @@ Identical in functionality to the builtin `thread-last'"
              forms
              :initial-value initial-form))
 
+
+;;; Diamond macro's
 (defun arr--diamond-inserter (insert-fun)
   "Takes an INSERT-FUN. will return a builder function used to expand pipeline.
 Takes into account placeholders."
@@ -69,6 +73,7 @@ Takes into account placeholders."
   (and (symbolp form)
        (string= form "<>")))
 
+;;;###autoload
 (defmacro arr-<> (initial-form &rest forms)
   "Like ->, but if a form in FORMS has one or more symbols named <> as top-level element.
 Each such symbol is substituted by the primary result of the form
@@ -78,6 +83,7 @@ as diamond wand."
              forms
              :initial-value initial-form))
 
+;;;###autoload
 (defmacro arr-<>> (initial-form &rest forms)
   "Like -<>, but if a form has no symbol named <>,
 The insertion is done at the end like in ->>.
@@ -86,21 +92,27 @@ Also known as diamond spear."
              forms
              :initial-value initial-form))
 
+;;; fn varients
+
+;;;###autoload
 (defmacro arr-fn-> (&rest forms)
   "Return a lambda for FORMS."
   `(lambda (x)
      (arr-> x ,@forms)))
 
+;;;###autoload
 (defmacro arr-fn->> (&rest forms)
   "Return a lambda for FORMS."
   `(lambda (x)
      (arr->> x ,@forms)))
 
+;;;###autoload
 (defmacro arr-fn-<> (&rest forms)
   "Return a lambda for FORMS."
   `(lambda (x)
      (arr-<> x ,@forms)))
 
+;;;###autoload
 (defmacro arr-fn-<>> (&rest forms)
   "Return a lambda for FORMS."
   `(lambda (x)
