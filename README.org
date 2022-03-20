@@ -3,23 +3,69 @@
 A set of Threading macro's blatantly rewritten from [[https://github.com/nightfly19/cl-arrows][cl-arrows]]
 
 * Roadmap
-- [ ] Formalise direction
-- [ ] find more arrows
+- [-] Formalise direction
+- [ ] find more arrow idea's (this is now a small obsession)
 - [ ] Implement arrows from the [[https://lexi-lambda.github.io/threading/][racket threading library]]
 - [ ] Implement arrows from the [[https://github.com/rplevy/swiss-arrows][swiss arrows library]]
 - [ ] add an [[https://hexdocs.pm/elixir/1.13/IO.html#inspect/2][inspect function similar to elixirs for easier debugging]]
 
 
 * Reference
-| Macro name | Description                      | Nickname      |
-|------------+----------------------------------+---------------|
-| =arr->=    | argument first                   | tip           |
-| =arr->>=   | argument last                    | spear         |
-| =arr-<>=   | argument first with placeholders | diamond wand  |
-| =arr-<>>=  | argument last with placeholders  | diamond spear |
+| Macro name | Description                                 | Nickname      |
+|------------+---------------------------------------------+---------------|
+| =arr->=    | argument first. Identical to =thread-first= | tip           |
+| =arr->>=   | argument last. Identical to =thread-last=   | spear         |
+| =arr-<>=   | argument first with placeholders            | diamond wand  |
+| =arr-<>>=  | argument last with placeholders             | diamond spear |
 
 each of them has a =fn= variant which allows for "curried" like function syntax
+they take the name of =arr-fn-NAME= so for example =arr-fn-<>>=
 
+* Examples
+** Simple threading
+here we are just pushing a number through a contrived pipeline
+#+begin_src emacs-lisp
+(arr-> 8 (1+) (number-to-string) (string-pad 5) (string-pad 9 nil t))
+#+end_src
+
+#+RESULTS:
+: "     9      "
+
+Here we are using =->>= to pass this list in as the last argument of these maps
+and filters.
+#+begin_src emacs-lisp
+(arr->> '(1 2 3 4 5)
+        (seq-map #'1+)
+        (seq-filter #'cl-evenp))
+#+end_src
+
+#+RESULTS:
+| 2 | 4 | 6 |
+
+** placeholder example
+If we go back to that last example we see a limitation, we can only thread
+/last/, we could not use =seq-reduce= here as it requires the sequence to be the
+2nd argument out of 3 (placing it in the middle). This is where diamond variants
+come into play.
+#+begin_src emacs-lisp
+(arr-<>> '(1 2 3 4 5)
+         (seq-map #'1+)
+         (seq-filter #'cl-evenp)
+         (seq-reduce #'+ <> 0))
+#+end_src
+
+#+RESULTS:
+: 12
+
+Here =<>= is a placeholder meaning our value is passed into that spot, this
+makes it very easy to compose functions that might not have uniform positioning
+of the passed argument (like with seq).
+
+** fn example
+We also provide composition functions which are useful when you want to have a
+function that represents a set of transformations. this also allows your code to
+look [[https://en.wikipedia.org/wiki/Tacit_programming][point free]].
+All arrow macro's have a =fn= variant
 #+begin_src emacs-lisp
 (require 'arr)
 
@@ -28,3 +74,14 @@ each of them has a =fn= variant which allows for "curried" like function syntax
 
 #+RESULTS:
 | 2 | 3 | 4 |
+
+*** Lambda short hands
+as a side effect this allows for lambda short hands without the need to use the
+entire lambda syntactic form. This is not as nice nor as flexible as something
+like [[https://github.com/cadadr/elisp#dollarel][dollar.el]] but still is worth mentioning IMHO
+#+begin_src emacs-lisp
+(seq-map (arr-fn-<> (* <> <>)) '(2 3 4))
+#+end_src
+
+#+RESULTS:
+| 4 | 9 | 16 |
