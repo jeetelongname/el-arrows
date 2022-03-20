@@ -118,5 +118,17 @@ Also known as diamond spear."
   `(lambda (x)
      (arr-<>> x ,@forms)))
 
+;;; helper functions
+(cl-defun arr-inspect (value &optional &key print-fn label)
+  "Like the `identity' function but will allow for printing of the VALUE.
+Can have an optional LABEL to identify inspect calls.
+Useful when debugging pipelines.
+pass in your own PRINT-FN to use other interfaces.
+Prints to *Messages* by default."
+  (if print-fn
+      (funcall print-fn value)
+    (message "%s: %s" (if label "value" label) value))
+  value)
+
 (provide 'arr)
 ;;; arr.el ends here
