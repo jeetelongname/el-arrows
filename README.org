@@ -1,3 +1,30 @@
 #+TITLE: Arrows
 
 A set of Threading macro's blatantly rewritten from [[https://github.com/nightfly19/cl-arrows][cl-arrows]]
+
+* Roadmap
+- [ ] Formalise direction
+- [ ] find more arrows
+- [ ] Implement arrows from the [[https://lexi-lambda.github.io/threading/][racket threading library]]
+- [ ] Implement arrows from the [[https://github.com/rplevy/swiss-arrows][swiss arrows library]]
+- [ ] add an [[https://hexdocs.pm/elixir/1.13/IO.html#inspect/2][inspect function similar to elixirs for easier debugging]]
+
+
+* Reference
+| Macro name | Description                      | Nickname      |
+|------------+----------------------------------+---------------|
+| =arr->=    | argument first                   | tip           |
+| =arr->>=   | argument last                    | spear         |
+| =arr-<>=   | argument first with placeholders | diamond wand  |
+| =arr-<>>=  | argument last with placeholders  | diamond spear |
+
+each of them has a =fn= variant which allows for "curried" like function syntax
+
+#+begin_src emacs-lisp
+(require 'arr)
+
+(seq-map (arr-fn-> (1+) (number-to-string)) '(1 2 3))
+#+end_src
+
+#+RESULTS:
+| 2 | 3 | 4 |
