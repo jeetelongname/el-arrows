@@ -75,13 +75,14 @@ as diamond wand."
              :initial-value initial-form))
 
 (defmacro arr-<>> (initial-form &rest forms)
-  "Like -<>, but if a form has no symbol named <>, the insertion is done at the
-end like in ->>.  Also known as diamond spear."
+  "Like -<>, but if a form has no symbol named <>,
+The insertion is done at the end like in ->>.
+Also known as diamond spear."
   (cl-reduce (arr--diamond-inserter #'arr--insert-last)
              forms
              :initial-value initial-form))
 
-(defmacro arr-lambda-> (&rest forms)
+(defmacro arr-fn-> (&rest forms)
   "Return a lambda for FORMS."
   `(lambda (x)
      (arr-> x ,@forms)))
