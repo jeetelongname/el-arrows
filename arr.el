@@ -21,6 +21,7 @@
 (require 'cl-lib)
 
 (defun arr--simple-inserter (insert-fun)
+  "Takes an INSERT-FUN. will return a builder function used to expand pipeline."
   (lambda (acc next)
     (if (listp next)
         (funcall insert-fun acc next)
@@ -38,7 +39,8 @@
 
 (defmacro arr-> (initial-form &rest forms)
   "Insert INITIAL-FORM as first argument into the first of FORMS.
-The result into the next, etc., before evaluation.  FORMS are treated as list designators.
+The result into the next, etc., before evaluation.
+FORMS are treated as list designators.
 Identical in functionality to the builtin `thread-first'"
   (cl-reduce (arr--simple-inserter #'arr--insert-first)
              forms
@@ -52,13 +54,15 @@ Identical in functionality to the builtin `thread-last'"
              :initial-value initial-form))
 
 (defun arr--diamond-inserter (insert-fun)
+  "Takes an INSERT-FUN. will return a builder function used to expand pipeline.
+Takes into account placeholders."
   (arr--simple-inserter (lambda (acc next)
-                     (cl-case (cl-count-if #'arr--<>p next)
-                       (0 (funcall insert-fun acc next))
-                       (1 (cl-substitute-if acc #'arr--<>p next))
-                       (t (let ((r (gensym "R")))
-                            `(let ((,r ,acc))
-                               ,(cl-substitute-if r #'arr--<>p next))))))))
+                          (cl-case (cl-count-if #'arr--<>p next)
+                            (0 (funcall insert-fun acc next))
+                            (1 (cl-substitute-if acc #'arr--<>p next))
+                            (t (let ((r (gensym "R")))
+                                 `(let ((,r ,acc))
+                                    ,(cl-substitute-if r #'arr--<>p next))))))))
 
 (defun arr--<>p (form)
   "Predicate identifying the placeholders in FORMs for the -<> and -<>> macros."
