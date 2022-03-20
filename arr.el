@@ -87,5 +87,20 @@ Also known as diamond spear."
   `(lambda (x)
      (arr-> x ,@forms)))
 
+(defmacro arr-fn->> (&rest forms)
+  "Return a lambda for FORMS."
+  `(lambda (x)
+     (arr->> x ,@forms)))
+
+(defmacro arr-fn-<> (&rest forms)
+  "Return a lambda for FORMS."
+  `(lambda (x)
+     (arr-<> x ,@forms)))
+
+(defmacro arr-fn-<>> (&rest forms)
+  "Return a lambda for FORMS."
+  `(lambda (x)
+     (arr-<>> x ,@forms)))
+
 (provide 'arr)
 ;;; arr.el ends here
