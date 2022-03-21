@@ -19,6 +19,44 @@
                   (arr->* (/ 2)))
              2)))
 
+(ert-deftest arr-?>test ()
+  (should (null (arr-?> 3
+                        (+ 5)
+                        (member '(2 5 9))
+                        cl-first
+                        (* 9))))
+  (should (= (arr-?> 3
+                     (+ 5)
+                     (member '(2 5 8 9))
+                     cl-first
+                     (* 9))
+             72))
+  (should (= (arr-?> 3
+                     (+ 5)
+                     (member '(2 5 8 9))
+                     cl-second
+                     (* 9))
+             81))
+  (should (null (arr-?> 3
+                        (+ 5)
+                        (member '(2 5 8 9))
+                        cl-third
+                        (* 9))))
+  (should (null (arr-?> '(:a 1)
+                        (cl-getf :b)
+                        1+))))
+
+(ert-deftest arr-?>>test ()
+  (should (= (arr-?>> '((:a . 3) (:b . 5))
+                      (assoc :a)
+                      cdr
+                      1+)
+             4))
+  (should (null (arr-?>> '((:a . 3) (:b . 5))
+                         (assoc :c)
+                         cdr
+                         1+))))
+
 (ert-deftest arr-<>test ()
   (should (equal (arr-<> 10
                          (list 9 <> 11)
