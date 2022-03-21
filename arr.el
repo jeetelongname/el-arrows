@@ -99,6 +99,19 @@ Also known as diamond spear."
              forms
              :initial-value initial-form))
 
+;;;###autoload
+(defmacro arr->* (&rest forms)
+  "Like arr->, but takes its initial form as the last argument, rather than the
+first.  This is intended for nesting insert-arg-first forms within an arr->>.
+
+Example:
+
+    (arr->> 3
+         (/ 12)
+         (arr->* (/ 2)))
+    => 2"
+  `(arr-> ,@(append (last forms) (butlast forms))))
+
 ;;; fn varients
 
 ;;;###autoload
