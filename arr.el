@@ -99,6 +99,47 @@ Also known as diamond spear."
              forms
              :initial-value initial-form))
 
+;;; Maybe/nil short-circuiting macros
+;;;; Internal
+(defun arr--?-inserter (insert-fun)
+  (lambda (acc next)
+    (cl-destructuring-bind (let* bindings var) acc
+      `(,let* (,@bindings
+               (,var (when ,var
+                       ,(funcall insert-fun var next))))
+         ,var))))
+
+(defun arr--expand-maybe (initial-form forms insert-fun)
+  (let ((var (gensym "maybe")))
+    (cl-reduce (arr--?-inserter (arr--simple-inserter insert-fun))
+            forms
+            :initial-value `(let* ((,var ,initial-form))
+                              ,var))))
+
+;;;###autoload
+(defmacro arr-?> (initial-form &rest forms)
+  "Like arr->, but short-circuits to nil as soon as either INITIAL-FORM or any of
+FORMS return nil.  This is like all these forms are lifted to the maybe monad."
+  (arr--expand-maybe initial-form forms #'arr--insert-first))
+
+;;;###autoload
+(defmacro arr-?>> (initial-form &rest forms)
+  "Like arr-?>, but with insertion behaviour as in arr->>."
+  (arr--expand-maybe initial-form forms #'arr--insert-last))
+
+;;;###autoload
+(defmacro arr->* (&rest forms)
+  "Like arr->, but takes its initial form as the last argument, rather than the
+first.  This is intended for nesting insert-arg-first forms within an arr->>.
+
+Example:
+
+    (arr->> 3
+         (/ 12)
+         (arr->* (/ 2)))
+    => 2"
+  `(arr-> ,@(append (last forms) (butlast forms))))
+
 ;;; fn varients
 
 ;;;###autoload
