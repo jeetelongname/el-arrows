@@ -111,21 +111,31 @@ Also known as diamond spear."
 
 (defun arr--expand-maybe (initial-form forms insert-fun)
   (let ((var (gensym "maybe")))
-    (cl-reduce (arr--?-inserter (arr--simple-inserter insert-fun))
-            forms
-            :initial-value `(let* ((,var ,initial-form))
-                              ,var))))
+    (cl-reduce (arr--?-inserter insert-fun)
+               forms
+               :initial-value `(let* ((,var ,initial-form))
+                                 ,var))))
 
 ;;;###autoload
 (defmacro arr-?> (initial-form &rest forms)
   "Like arr->, but short-circuits to nil as soon as either INITIAL-FORM or any of
 FORMS return nil.  This is like all these forms are lifted to the maybe monad."
-  (arr--expand-maybe initial-form forms #'arr--insert-first))
+  (arr--expand-maybe initial-form forms (arr--simple-inserter #'arr--insert-first)))
 
 ;;;###autoload
 (defmacro arr-?>> (initial-form &rest forms)
   "Like arr-?>, but with insertion behaviour as in arr->>."
-  (arr--expand-maybe initial-form forms #'arr--insert-last))
+  (arr--expand-maybe initial-form forms (arr--simple-inserter #'arr--insert-last)))
+
+;;;###autoload
+(defmacro arr-<?> (initial-form &rest forms)
+  "Like arr-?>, but with insertion behaviour as in arr-<>."
+  (arr--expand-maybe initial-form forms (arr--diamond-inserter #'arr--insert-first)))
+
+;;;###autoload
+(defmacro arr-<?>> (initial-form &rest forms)
+  "Like arr-?>, but with insertion behaviour as in arr-<>."
+  (arr--expand-maybe initial-form forms (arr--diamond-inserter #'arr--insert-last)))
 
 ;;;###autoload
 (defmacro arr->* (&rest forms)
