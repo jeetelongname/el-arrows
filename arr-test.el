@@ -13,6 +13,12 @@
 (ert-deftest arr->>test ()
   (should (= (arr->> 10 (/ 5)) 0)))
 
+(ert-deftest arr->*test ()
+  (should (= (arr->> 3
+                  (/ 12)
+                  (arr->* (/ 2)))
+             2)))
+
 (ert-deftest arr-<>test ()
   (should (equal (arr-<> 10
                          (list 9 <> 11)
