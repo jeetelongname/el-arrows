@@ -146,6 +146,15 @@ Example:
     => 2"
   `(arr-> ,@(append (last forms) (butlast forms))))
 
+(defmacro arr-as-> (initial-form var &rest forms)
+  "Thread INITIAL-FORM through FORMS as VAR to there successor.
+Note that unlike the other threading macro's that every call needs to
+explicitly use the variable."
+  `(let* ,(mapcar (lambda (form)
+                    (list var form))
+                  (cons initial-form forms))
+     ,var))
+
 ;;; fn varients
 
 (defmacro arr-fn-> (&rest forms)
@@ -167,6 +176,11 @@ Example:
   "Return a `lambda' that takes in one argument and threads it through FORMS using `arr-<>>'."
   `(lambda (x)
      (arr-<>> x ,@forms)))
+
+(defmacro arr-fn-as-> (name &rest forms)
+  "Take a NAME and return a `lambda' that takes in one argument and threads it through FORMS using `arr-as->'."
+  `(lambda (x)
+     (arr-as-> x ,name ,@forms)))
 
 ;;; helper functions
 (cl-defun arr-inspect (value &optional &key print-fn label)
