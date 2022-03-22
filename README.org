@@ -32,16 +32,17 @@ A set of threading macros blatantly rewritten from [[https://github.com/nightfly
 
 ** Macros
 
-| Macro name | default argument placement | placeholders | Description                                | Nickname      |
-|------------+----------------------------+--------------+--------------------------------------------+---------------|
-| =arr->=      | argument first.            | no           | Identical to =thread-first=                  | tip           |
-| =arr->>=     | argument last.             | no           | Identical to =thread-last=                   | spear         |
-| =arr-<>=   | argument first             | yes          |                                            | diamond wand  |
-| =arr-<>>=    | argument last              | yes          |                                            | diamond spear |
-| =arr-?>=     | argument first.            | no           | will short circuit when a form returns nil | TODO          |
-| =arr-?>>=    | argument last.             | no           | will short circuit when a form returns nil | TODO          |
-| =arr-<?>=    | argument first             | yes          | will short circuit when a form returns nil | TODO          |
-| =arr-<?>>=   | argument last              | yes          | will short circuit when a form returns nil | TODO          |
+| Macro name | default argument placement | placeholders | Description                                                         | Nickname      |
+|------------+----------------------------+--------------+---------------------------------------------------------------------+---------------|
+| =arr->=    | argument first.            | no           | Identical to =thread-first=                                         | tip           |
+| =arr->>=   | argument last.             | no           | Identical to =thread-last=                                          | spear         |
+| =arr-<>=   | argument first             | yes          |                                                                     | diamond wand  |
+| =arr-<>>=  | argument last              | yes          |                                                                     | diamond spear |
+| =arr-?>=   | argument first.            | no           | will short circuit when a form returns nil                          | TODO          |
+| =arr-?>>=  | argument last.             | no           | will short circuit when a form returns nil                          | TODO          |
+| =arr-<?>=  | argument first             | yes          | will short circuit when a form returns nil                          | TODO          |
+| =arr-<?>>= | argument last              | yes          | will short circuit when a form returns nil                          | TODO          |
+| =arr-as->= | argument passed as NAME    | kinda        | Argument is passed down as a NAME. syntax sugar for a recursive let | as            |
 
 Each of them has a =fn= variant which allows for "curried" like function syntax.
 They take the name of =arr-fn-NAME= so for example =arr-fn-<>>=.
