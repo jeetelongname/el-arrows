@@ -162,29 +162,30 @@ Example:
 
 ;;;###autoload
 (defmacro arr-fn-> (&rest forms)
-  "Return a lambda for FORMS."
+  "Return a `lambda' that takes in one argument and threads it through FORMS using `arr->'."
   `(lambda (x)
      (arr-> x ,@forms)))
 
 ;;;###autoload
 (defmacro arr-fn->> (&rest forms)
-  "Return a lambda for FORMS."
+  "Return a `lambda' that takes in one argument and threads it through FORMS using `arr->>'."
   `(lambda (x)
      (arr->> x ,@forms)))
 
 ;;;###autoload
 (defmacro arr-fn-<> (&rest forms)
-  "Return a lambda for FORMS."
+  "Return a `lambda' that takes in one argument and threads it through FORMS using `arr-<>'."
   `(lambda (x)
      (arr-<> x ,@forms)))
 
 ;;;###autoload
 (defmacro arr-fn-<>> (&rest forms)
-  "Return a lambda for FORMS."
+  "Return a `lambda' that takes in one argument and threads it through FORMS using `arr-<>>'."
   `(lambda (x)
      (arr-<>> x ,@forms)))
 
 ;;; helper functions
+;;;###autoload
 (cl-defun arr-inspect (value &optional &key print-fn label)
   "Like the `identity' function but will allow for printing of the VALUE.
 Can have an optional LABEL to identify inspect calls.
