@@ -54,7 +54,7 @@ Identical in functionality to the builtin `thread-first'"
 
 ;;;###autoload
 (defmacro arr->> (initial-form &rest forms)
-  "Like ->, but the INITIAL-FORM are inserted as last argument in FORMS.
+  "Like `arr->', but the INITIAL-FORM are inserted as last argument in FORMS.
 Identical in functionality to the builtin `thread-last'"
   (cl-reduce (arr--simple-inserter #'arr--insert-last)
              forms
@@ -82,7 +82,8 @@ Takes into account placeholders."
 
 ;;;###autoload
 (defmacro arr-<> (initial-form &rest forms)
-  "Like ->, but if a form in FORMS has one or more symbols named <> as top-level element.
+  "Like `arr->' but FORMS can have placeholders `<>' in an arbitrary location.
+This only applys to the top level and not in INITIAL-FORM.
 Each such symbol is substituted by the primary result of the form
 accumulated so far, instead of it being inserted as first argument.  Also known
 as diamond wand."
@@ -92,9 +93,11 @@ as diamond wand."
 
 ;;;###autoload
 (defmacro arr-<>> (initial-form &rest forms)
-  "Like -<>, but if a form has no symbol named <>,
-The insertion is done at the end like in ->>.
-Also known as diamond spear."
+  "Like `arr->>' but FORMS can have placeholders `<>' in an arbitrary location.
+This only applys to the top level and not in INITIAL-FORM.
+Each such symbol is substituted by the primary result of the form
+accumulated so far, instead of it being inserted as last argument.  Also known
+as diamond spear."
   (cl-reduce (arr--diamond-inserter #'arr--insert-last)
              forms
              :initial-value initial-form))
@@ -102,6 +105,8 @@ Also known as diamond spear."
 ;;; Maybe/nil short-circuiting macros
 ;;;; Internal
 (defun arr--?-inserter (insert-fun)
+  "Generate reduction function for nill short circeting function.
+Takes INSERT-FUN to generate actual code."
   (lambda (acc next)
     (cl-destructuring-bind (let* bindings var) acc
       `(,let* (,@bindings
@@ -110,6 +115,9 @@ Also known as diamond spear."
          ,var))))
 
 (defun arr--expand-maybe (initial-form forms insert-fun)
+  "Perform nil short circting reduction.
+Acts like other reductions in that it takes an INITIAL-FORM
+and threads it through FORMS at the direction of INSERT-FUN."
   (let ((var (gensym "maybe")))
     (cl-reduce (arr--?-inserter insert-fun)
                forms
@@ -118,29 +126,29 @@ Also known as diamond spear."
 
 ;;;###autoload
 (defmacro arr-?> (initial-form &rest forms)
-  "Like arr->, but short-circuits to nil as soon as either INITIAL-FORM or any of
-FORMS return nil.  This is like all these forms are lifted to the maybe monad."
+  "Like `arr->' but will short circut if any of FORMS, incuding INITIAL-FORM, if nil."
   (arr--expand-maybe initial-form forms (arr--simple-inserter #'arr--insert-first)))
 
 ;;;###autoload
 (defmacro arr-?>> (initial-form &rest forms)
-  "Like arr-?>, but with insertion behaviour as in arr->>."
+  "Like `arr->>' but will short circut if any of FORMS, incuding INITIAL-FORM, if nil."
   (arr--expand-maybe initial-form forms (arr--simple-inserter #'arr--insert-last)))
 
 ;;;###autoload
 (defmacro arr-<?> (initial-form &rest forms)
-  "Like arr-?>, but with insertion behaviour as in arr-<>."
+  "Like `arr-<>' but will short circut if any of FORMS, incuding INITIAL-FORM, if nil."
   (arr--expand-maybe initial-form forms (arr--diamond-inserter #'arr--insert-first)))
 
 ;;;###autoload
 (defmacro arr-<?>> (initial-form &rest forms)
-  "Like arr-?>, but with insertion behaviour as in arr-<>."
+  "Like `arr-<?>' but will short circut if any of FORMS, incuding INITIAL-FORM, if nil."
   (arr--expand-maybe initial-form forms (arr--diamond-inserter #'arr--insert-last)))
 
 ;;;###autoload
 (defmacro arr->* (&rest forms)
-  "Like arr->, but takes its initial form as the last argument, rather than the
-first.  This is intended for nesting insert-arg-first forms within an arr->>.
+  "Like `arr->' but the initial-form is passed in as the last in FORMS.
+This is meant to be used in composition with `arr->>`,
+where the argument is passed in as the last one.
 
 Example:
 
