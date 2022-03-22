@@ -22,7 +22,6 @@
 
 
 ;;; Normal threading macro's
-
 ;;;;;; Internal
 (defun arr--simple-inserter (insert-fun)
   "Takes an INSERT-FUN. will return a builder function used to expand pipeline."
@@ -42,7 +41,6 @@
   (append surround (list arg)))
 
 ;;;; Macro's
-;;;###autoload
 (defmacro arr-> (initial-form &rest forms)
   "Insert INITIAL-FORM as first argument into the first of FORMS.
 The result into the next, etc., before evaluation.
@@ -52,15 +50,12 @@ Identical in functionality to the builtin `thread-first'"
              forms
              :initial-value initial-form))
 
-;;;###autoload
 (defmacro arr->> (initial-form &rest forms)
   "Like `arr->', but the INITIAL-FORM are inserted as last argument in FORMS.
 Identical in functionality to the builtin `thread-last'"
   (cl-reduce (arr--simple-inserter #'arr--insert-last)
              forms
              :initial-value initial-form))
-
-
 
 ;;; Diamond macro's
 ;;;; Internal
@@ -80,7 +75,6 @@ Takes into account placeholders."
   (and (symbolp form)
        (string= form "<>")))
 
-;;;###autoload
 (defmacro arr-<> (initial-form &rest forms)
   "Like `arr->' but FORMS can have placeholders `<>' in an arbitrary location.
 This only applys to the top level and not in INITIAL-FORM.
@@ -91,7 +85,6 @@ as diamond wand."
              forms
              :initial-value initial-form))
 
-;;;###autoload
 (defmacro arr-<>> (initial-form &rest forms)
   "Like `arr->>' but FORMS can have placeholders `<>' in an arbitrary location.
 This only applys to the top level and not in INITIAL-FORM.
@@ -124,27 +117,22 @@ and threads it through FORMS at the direction of INSERT-FUN."
                :initial-value `(let* ((,var ,initial-form))
                                  ,var))))
 
-;;;###autoload
 (defmacro arr-?> (initial-form &rest forms)
   "Like `arr->' but will short circut if any of FORMS, incuding INITIAL-FORM, if nil."
   (arr--expand-maybe initial-form forms (arr--simple-inserter #'arr--insert-first)))
 
-;;;###autoload
 (defmacro arr-?>> (initial-form &rest forms)
   "Like `arr->>' but will short circut if any of FORMS, incuding INITIAL-FORM, if nil."
   (arr--expand-maybe initial-form forms (arr--simple-inserter #'arr--insert-last)))
 
-;;;###autoload
 (defmacro arr-<?> (initial-form &rest forms)
   "Like `arr-<>' but will short circut if any of FORMS, incuding INITIAL-FORM, if nil."
   (arr--expand-maybe initial-form forms (arr--diamond-inserter #'arr--insert-first)))
 
-;;;###autoload
 (defmacro arr-<?>> (initial-form &rest forms)
   "Like `arr-<?>' but will short circut if any of FORMS, incuding INITIAL-FORM, if nil."
   (arr--expand-maybe initial-form forms (arr--diamond-inserter #'arr--insert-last)))
 
-;;;###autoload
 (defmacro arr->* (&rest forms)
   "Like `arr->' but the initial-form is passed in as the last in FORMS.
 This is meant to be used in composition with `arr->>`,
@@ -160,56 +148,47 @@ Example:
 
 ;;; fn varients
 
-;;;###autoload
 (defmacro arr-fn-> (&rest forms)
   "Return a `lambda' that takes in one argument and threads it through FORMS using `arr->'."
   `(lambda (x)
      (arr-> x ,@forms)))
 
-;;;###autoload
 (defmacro arr-fn->> (&rest forms)
   "Return a `lambda' that takes in one argument and threads it through FORMS using `arr->>'."
   `(lambda (x)
      (arr->> x ,@forms)))
 
-;;;###autoload
 (defmacro arr-fn-<> (&rest forms)
   "Return a `lambda' that takes in one argument and threads it through FORMS using `arr-<>'."
   `(lambda (x)
      (arr-<> x ,@forms)))
 
-;;;###autoload
 (defmacro arr-fn-<>> (&rest forms)
   "Return a `lambda' that takes in one argument and threads it through FORMS using `arr-<>>'."
   `(lambda (x)
      (arr-<>> x ,@forms)))
 
-;;;###autoload
 (defmacro arr-fn-?> (&rest forms)
   "Return a `lambda' that takes in one argument and threads it through FORMS using `arr-?>'."
   `(lambda (x)
      (arr-?> x ,@forms)))
 
-;;;###autoload
 (defmacro arr-fn-?>> (&rest forms)
   "Return a `lambda' that takes in one argument and threads it through FORMS using `arr-?>>'."
   `(lambda (x)
      (arr-?>> x ,@forms)))
 
-;;;###autoload
 (defmacro arr-fn-<?> (&rest forms)
   "Return a `lambda' that takes in one argument and threads it through FORMS using `arr-<?>'."
   `(lambda (x)
      (arr-<?> x ,@forms)))
 
-;;;###autoload
 (defmacro arr-fn-<?>> (&rest forms)
   "Return a `lambda' that takes in one argument and threads it through FORMS using `arr-<?>>'."
   `(lambda (x)
      (arr-<?>> x ,@forms)))
 
 ;;; helper functions
-;;;###autoload
 (cl-defun arr-inspect (value &optional &key print-fn label)
   "Like the `identity' function but will allow for printing of the VALUE.
 Can have an optional LABEL to identify inspect calls.
