@@ -10,19 +10,23 @@ A set of Threading macro's blatantly rewritten from [[https://github.com/nightfl
 - [ ] Implement arrows from the [[https://github.com/rplevy/swiss-arrows][swiss arrows library]]
 - [ ] add an [[https://hexdocs.pm/elixir/1.13/IO.html#inspect/2][inspect function similar to elixirs]] for easier debugging
 ** Arrows to implement
-- [ ] nil short circuiting arrows, these will return nil if any of the forms
+- [X] nil short circuiting arrows, these will return nil if any of the forms
   return nil.
 
 
 * Reference
 ** Macros
 
-| Macro name | Description                                 | Nickname      |
-|------------+---------------------------------------------+---------------|
-| =arr->=    | argument first. Identical to =thread-first= | tip           |
-| =arr->>=   | argument last. Identical to =thread-last=   | spear         |
-| =arr-<>=   | argument first with placeholders            | diamond wand  |
-| =arr-<>>=  | argument last with placeholders             | diamond spear |
+| Macro name | default argument placement | placeholders | Description                               | Nickname      |
+|------------+----------------------------+--------------+-------------------------------------------+---------------|
+| =arr->=    | argument first.            | no           | Identical to =thread-first=               | tip           |
+| =arr->>=   | argument last.             | no           | Identical to =thread-last=                | spear         |
+| =arr-<>=   | argument first             | yes          |                                           | diamond wand  |
+| =arr-<>>=  | argument last              | yes          |                                           | diamond spear |
+| =arr-?>=   | argument first.            | no           | will short circuit when a form returns nil | TODO          |
+| =arr-?>>=  | argument last.             | no           | will short circuit when a form returns nil | TODO          |
+| =arr-<?>=  | argument first             | yes          | will short circuit when a form returns nil | TODO          |
+| =arr-<?>>= | argument last              | yes          | will short circuit when a form returns nil | TODO          |
 
 
 each of them has a =fn= variant which allows for "curried" like function syntax
@@ -33,7 +37,6 @@ they take the name of =arr-fn-NAME= so for example =arr-fn-<>>=
 | Function name | Description                                                              | arguments                             |
 |---------------+--------------------------------------------------------------------------+---------------------------------------|
 | =arr-inspect= | a way to quickly print out the value in a pipeline without disrupting it | =value &optional &key print-fn label= |
-|               |                                                                          |                                       |
 
 * Examples
 ** Simple threading
