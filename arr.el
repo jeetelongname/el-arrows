@@ -62,7 +62,7 @@ Identical in functionality to the builtin `thread-last'"
 ;;; Diamond macros
 ;;;; Internal
 (defun arr--diamond-inserter (insert-fun)
-  "Takes an INSERT-FUN. will return a builder function used to expand pipeline.
+  "Takes an INSERT-FUN. Will return a builder function used to expand pipeline.
 Takes into account placeholders."
   (arr--simple-inserter (lambda (acc next)
                           (cl-case (cl-count-if #'arr--<>p next)
@@ -178,8 +178,8 @@ See `arr->*' for a full explaination."
   `(arr-<> ,@(append (last forms) (butlast forms))))
 
 (defmacro arr-as-> (initial-form var &rest forms)
-  "Thread INITIAL-FORM through FORMS as VAR to there successor.
-Note that unlike the other threading macros that every call needs to
+  "Thread INITIAL-FORM through FORMS as VAR to their successor.
+Note that unlike the other threading macros, every call needs to
 explicitly use the variable."
   `(let* ,(mapcar (lambda (form)
                     (list var form))
