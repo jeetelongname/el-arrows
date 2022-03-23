@@ -72,20 +72,43 @@ Takes into account placeholders."
                                  `(let ((,r ,acc))
                                     ,(cl-substitute-if r #'arr--<>p next))))))))
 
+(defun arr--diamond-inserter* (placeholder insert-fun)
+  "Takes a PLACEHOLDER symbol and an INSERT-FUN. Will return a builder function used to expand pipeline.
+Takes into account the provided PLACEHOLDER."
+  (arr--simple-inserter (lambda (acc next)
+                          (cl-case (cl-count-if (arr--make-placeholder-p placeholder) next)
+                            (0 (funcall insert-fun acc next))
+                            (1 (cl-substitute-if acc (arr--make-placeholder-p placeholder) next))
+                            (t (let ((r (gensym "R")))
+                                 `(let ((,r ,acc))
+                                    ,(cl-substitute-if r (arr--make-placeholder-p placeholder) next))))))))
+
 (defun arr--<>p (form)
   "Predicate identifying the placeholders in FORMs for the -<> and -<>> macros."
   (and (symbolp form)
        (string= form "<>")))
 
+(defun arr--make-placeholder-p (placeholder)
+  "Predicate identifying the placeholders in FORMs for the -<> and -<>> macros."
+  (lambda (form)
+    (and (symbolp form)
+         (string= form placeholder))))
+
 (defmacro arr-<> (initial-form &rest forms)
-  "Like `arr->' but FORMS can have placeholders `<>' in an arbitrary location.
-This only applys to the top level and not in INITIAL-FORM.
-Each such symbol is substituted by the primary result of the form
-accumulated so far, instead of it being inserted as first argument.  Also known
-as diamond wand."
-  (cl-reduce (arr--diamond-inserter #'arr--insert-first)
-             forms
-             :initial-value initial-form))
+  "Like `arr->' but FORMS can have placeholders in an arbitrary locations.
+This only applys to the top level and not in INITIAL-FORM. If
+INITIAL-FORM is a list, its first element is used as placeholder;
+if it is a value, the symbol `<>' is used as placeholder. Each
+such symbol is substituted by the primary result of the form
+accumulated so far, instead of it being inserted as first
+argument. Also known as diamond wand."
+  (cl-destructuring-bind
+      (placeholder initial-value) (pcase initial-form
+                                    (`(,placeholder ,val) (list placeholder val))
+                                    (val (list '<> val)))
+    (cl-reduce (arr--diamond-inserter* placeholder #'arr--insert-first)
+               forms
+               :initial-value initial-value)))
 
 (defmacro arr-<>> (initial-form &rest forms)
   "Like `arr->>' but FORMS can have placeholders `<>' in an arbitrary location.

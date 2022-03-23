@@ -62,6 +62,11 @@
   (should (equal (arr-<> 10
                          (list 9 <> 11)
                          (seq-elt 1))
+                 10))
+
+  (should (equal (arr-<> (_ 10)
+                         (list 9 _ 11)
+                         (seq-elt 1))
                  10)))
 
 (ert-deftest arr-<>>test ()
