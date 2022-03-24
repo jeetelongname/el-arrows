@@ -1,4 +1,4 @@
-;;; arr.el --- An implementaion of some threading macro's -*- lexical-binding: t; -*-
+;;; arr.el --- Modern threading macros -*- lexical-binding: t; -*-
 ;;
 ;; Copyright (C) 2022 Jeetaditya Chatterjee
 ;;
@@ -14,14 +14,16 @@
 ;; This file is not part of GNU Emacs.
 ;;
 ;;; Commentary:
-;; This package adds a bunch of threading macro's
+;;
+;; An implementations of threading macros, inspired by other libraries from the
+;; wider Lisp ecosystem.
 ;;
 ;;
 ;;; Code:
 (require 'cl-lib)
 
 
-;;; Normal threading macro's
+;;; Normal threading macros
 ;;;;;; Internal
 (defun arr--simple-inserter (insert-fun)
   "Takes an INSERT-FUN. will return a builder function used to expand pipeline."
@@ -31,7 +33,7 @@
       (list next acc))))
 
 (defun arr--insert-first (arg surround)
-  "Insert ARG into the list form SURROUND as its first argument, after the operator."
+  "Insert ARG into the list SURROUND as its first argument, after the operator."
   (cl-list* (car surround)
             arg
             (cdr surround)))
@@ -40,7 +42,7 @@
   "Insert ARG into the list form SURROUND as its last argument."
   (append surround (list arg)))
 
-;;;; Macro's
+;;;; Macros
 (defmacro arr-> (initial-form &rest forms)
   "Insert INITIAL-FORM as first argument into the first of FORMS.
 The result into the next, etc., before evaluation.
@@ -57,7 +59,7 @@ Identical in functionality to the builtin `thread-last'"
              forms
              :initial-value initial-form))
 
-;;; Diamond macro's
+;;; Diamond macros
 ;;;; Internal
 (defun arr--diamond-inserter (insert-fun)
   "Takes an INSERT-FUN. will return a builder function used to expand pipeline.
@@ -118,19 +120,19 @@ and threads it through FORMS at the direction of INSERT-FUN."
                                  ,var))))
 
 (defmacro arr-?> (initial-form &rest forms)
-  "Like `arr->' but will short circut if any of FORMS, incuding INITIAL-FORM, if nil."
+  "Like `arr->' but short-circuits if any FORMS, incuding INITIAL-FORM, are nil."
   (arr--expand-maybe initial-form forms (arr--simple-inserter #'arr--insert-first)))
 
 (defmacro arr-?>> (initial-form &rest forms)
-  "Like `arr->>' but will short circut if any of FORMS, incuding INITIAL-FORM, if nil."
+  "Like `arr->>' but short-circuits if any FORMS, incuding INITIAL-FORM, are nil."
   (arr--expand-maybe initial-form forms (arr--simple-inserter #'arr--insert-last)))
 
 (defmacro arr-<?> (initial-form &rest forms)
-  "Like `arr-<>' but will short circut if any of FORMS, incuding INITIAL-FORM, if nil."
+  "Like `arr-<>' but short-circuits if any FORMS, incuding INITIAL-FORM, are nil."
   (arr--expand-maybe initial-form forms (arr--diamond-inserter #'arr--insert-first)))
 
 (defmacro arr-<?>> (initial-form &rest forms)
-  "Like `arr-<?>' but will short circut if any of FORMS, incuding INITIAL-FORM, if nil."
+  "Like `arr-<?>' but short-circuits if any FORMS, incuding INITIAL-FORM, are nil."
   (arr--expand-maybe initial-form forms (arr--diamond-inserter #'arr--insert-last)))
 
 (defmacro arr->* (&rest forms)
@@ -148,7 +150,7 @@ Example:
 
 (defmacro arr-as-> (initial-form var &rest forms)
   "Thread INITIAL-FORM through FORMS as VAR to there successor.
-Note that unlike the other threading macro's that every call needs to
+Note that unlike the other threading macros that every call needs to
 explicitly use the variable."
   `(let* ,(mapcar (lambda (form)
                     (list var form))
@@ -158,47 +160,47 @@ explicitly use the variable."
 ;;; fn varients
 
 (defmacro arr-fn-> (&rest forms)
-  "Return a `lambda' that takes in one argument and threads it through FORMS using `arr->'."
+  "Return a `lambda' that threads its argument through FORMS using `arr->'."
   `(lambda (x)
      (arr-> x ,@forms)))
 
 (defmacro arr-fn->> (&rest forms)
-  "Return a `lambda' that takes in one argument and threads it through FORMS using `arr->>'."
+  "Return a `lambda' that threads its argument through FORMS using `arr->>'."
   `(lambda (x)
      (arr->> x ,@forms)))
 
 (defmacro arr-fn-<> (&rest forms)
-  "Return a `lambda' that takes in one argument and threads it through FORMS using `arr-<>'."
+  "Return a `lambda' that threads its argument through FORMS using `arr-<>'."
   `(lambda (x)
      (arr-<> x ,@forms)))
 
 (defmacro arr-fn-<>> (&rest forms)
-  "Return a `lambda' that takes in one argument and threads it through FORMS using `arr-<>>'."
+  "Return a `lambda' that threads its argument through FORMS using `arr-<>>'."
   `(lambda (x)
      (arr-<>> x ,@forms)))
 
 (defmacro arr-fn-?> (&rest forms)
-  "Return a `lambda' that takes in one argument and threads it through FORMS using `arr-?>'."
+  "Return a `lambda' that threads its argument through FORMS using `arr-?>'."
   `(lambda (x)
      (arr-?> x ,@forms)))
 
 (defmacro arr-fn-?>> (&rest forms)
-  "Return a `lambda' that takes in one argument and threads it through FORMS using `arr-?>>'."
+  "Return a `lambda' that threads its argument through FORMS using `arr-?>>'."
   `(lambda (x)
      (arr-?>> x ,@forms)))
 
 (defmacro arr-fn-<?> (&rest forms)
-  "Return a `lambda' that takes in one argument and threads it through FORMS using `arr-<?>'."
+  "Return a `lambda' that threads its argument through FORMS using `arr-<?>'."
   `(lambda (x)
      (arr-<?> x ,@forms)))
 
 (defmacro arr-fn-<?>> (&rest forms)
-  "Return a `lambda' that takes in one argument and threads it through FORMS using `arr-<?>>'."
+  "Return a `lambda' that threads its argument through FORMS using `arr-<?>>'."
   `(lambda (x)
      (arr-<?>> x ,@forms)))
 
 (defmacro arr-fn-as-> (name &rest forms)
-  "Take a NAME and return a `lambda' that takes in one argument and threads it through FORMS using `arr-as->'."
+  "Given NAME, yield `lambda' that threads its arg through FORMS using `arr-as->'."
   `(lambda (x)
      (arr-as-> x ,name ,@forms)))
 
