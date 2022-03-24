@@ -1,4 +1,4 @@
-;;; arr.el --- An implementaion of some threading macro's -*- lexical-binding: t; -*-
+;;; arr.el --- An implementaion of some threading macros -*- lexical-binding: t; -*-
 ;;
 ;; Copyright (C) 2022 Jeetaditya Chatterjee
 ;;
@@ -14,14 +14,14 @@
 ;; This file is not part of GNU Emacs.
 ;;
 ;;; Commentary:
-;; This package adds a bunch of threading macro's
+;; This package adds a bunch of threading macros
 ;;
 ;;
 ;;; Code:
 (require 'cl-lib)
 
 
-;;; Normal threading macro's
+;;; Normal threading macros
 ;;;;;; Internal
 (defun arr--simple-inserter (insert-fun)
   "Takes an INSERT-FUN. will return a builder function used to expand pipeline."
@@ -40,7 +40,7 @@
   "Insert ARG into the list form SURROUND as its last argument."
   (append surround (list arg)))
 
-;;;; Macro's
+;;;; Macros
 (defmacro arr-> (initial-form &rest forms)
   "Insert INITIAL-FORM as first argument into the first of FORMS.
 The result into the next, etc., before evaluation.
@@ -57,7 +57,7 @@ Identical in functionality to the builtin `thread-last'"
              forms
              :initial-value initial-form))
 
-;;; Diamond macro's
+;;; Diamond macros
 ;;;; Internal
 (defun arr--diamond-inserter (insert-fun)
   "Takes an INSERT-FUN. will return a builder function used to expand pipeline.
@@ -148,7 +148,7 @@ Example:
 
 (defmacro arr-as-> (initial-form var &rest forms)
   "Thread INITIAL-FORM through FORMS as VAR to there successor.
-Note that unlike the other threading macro's that every call needs to
+Note that unlike the other threading macros that every call needs to
 explicitly use the variable."
   `(let* ,(mapcar (lambda (form)
                     (list var form))
