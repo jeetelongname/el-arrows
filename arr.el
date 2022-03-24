@@ -43,6 +43,7 @@
   (append surround (list arg)))
 
 ;;;; Macros
+;;;###autoload
 (defmacro arr-> (initial-form &rest forms)
   "Insert INITIAL-FORM as first argument into the first of FORMS.
 The result into the next, etc., before evaluation.
@@ -52,6 +53,7 @@ Identical in functionality to the builtin `thread-first'"
              forms
              :initial-value initial-form))
 
+;;;###autoload
 (defmacro arr->> (initial-form &rest forms)
   "Like `arr->', but the INITIAL-FORM are inserted as last argument in FORMS.
 Identical in functionality to the builtin `thread-last'"
@@ -77,6 +79,7 @@ Takes into account placeholders."
   (and (symbolp form)
        (string= form "<>")))
 
+;;;###autoload
 (defmacro arr-<> (initial-form &rest forms)
   "Like `arr->' but FORMS can have placeholders `<>' in an arbitrary location.
 This only applys to the top level and not in INITIAL-FORM.
@@ -87,6 +90,7 @@ as diamond wand."
              forms
              :initial-value initial-form))
 
+;;;###autoload
 (defmacro arr-<>> (initial-form &rest forms)
   "Like `arr->>' but FORMS can have placeholders `<>' in an arbitrary location.
 This only applys to the top level and not in INITIAL-FORM.
@@ -119,22 +123,27 @@ and threads it through FORMS at the direction of INSERT-FUN."
                :initial-value `(let* ((,var ,initial-form))
                                  ,var))))
 
+;;;###autoload
 (defmacro arr-?> (initial-form &rest forms)
   "Like `arr->' but short-circuits if any FORMS, incuding INITIAL-FORM, are nil."
   (arr--expand-maybe initial-form forms (arr--simple-inserter #'arr--insert-first)))
 
+;;;###autoload
 (defmacro arr-?>> (initial-form &rest forms)
   "Like `arr->>' but short-circuits if any FORMS, incuding INITIAL-FORM, are nil."
   (arr--expand-maybe initial-form forms (arr--simple-inserter #'arr--insert-last)))
 
+;;;###autoload
 (defmacro arr-<?> (initial-form &rest forms)
   "Like `arr-<>' but short-circuits if any FORMS, incuding INITIAL-FORM, are nil."
   (arr--expand-maybe initial-form forms (arr--diamond-inserter #'arr--insert-first)))
 
+;;;###autoload
 (defmacro arr-<?>> (initial-form &rest forms)
   "Like `arr-<?>' but short-circuits if any FORMS, incuding INITIAL-FORM, are nil."
   (arr--expand-maybe initial-form forms (arr--diamond-inserter #'arr--insert-last)))
 
+;;;###autoload
 (defmacro arr->* (&rest forms)
   "Like `arr->' but the initial-form is passed in as the last in FORMS.
 This is meant to be used in composition with `arr->>`,
@@ -148,6 +157,7 @@ Example:
     => 2"
   `(arr-> ,@(append (last forms) (butlast forms))))
 
+;;;###autoload
 (defmacro arr-as-> (initial-form var &rest forms)
   "Thread INITIAL-FORM through FORMS as VAR to there successor.
 Note that unlike the other threading macros that every call needs to
@@ -157,48 +167,57 @@ explicitly use the variable."
                   (cons initial-form forms))
      ,var))
 
-;;; fn varients
+;;; fn variants
 
+;;;###autoload
 (defmacro arr-fn-> (&rest forms)
   "Return a `lambda' that threads its argument through FORMS using `arr->'."
   `(lambda (x)
      (arr-> x ,@forms)))
 
+;;;###autoload
 (defmacro arr-fn->> (&rest forms)
   "Return a `lambda' that threads its argument through FORMS using `arr->>'."
   `(lambda (x)
      (arr->> x ,@forms)))
 
+;;;###autoload
 (defmacro arr-fn-<> (&rest forms)
   "Return a `lambda' that threads its argument through FORMS using `arr-<>'."
   `(lambda (x)
      (arr-<> x ,@forms)))
 
+;;;###autoload
 (defmacro arr-fn-<>> (&rest forms)
   "Return a `lambda' that threads its argument through FORMS using `arr-<>>'."
   `(lambda (x)
      (arr-<>> x ,@forms)))
 
+;;;###autoload
 (defmacro arr-fn-?> (&rest forms)
   "Return a `lambda' that threads its argument through FORMS using `arr-?>'."
   `(lambda (x)
      (arr-?> x ,@forms)))
 
+;;;###autoload
 (defmacro arr-fn-?>> (&rest forms)
   "Return a `lambda' that threads its argument through FORMS using `arr-?>>'."
   `(lambda (x)
      (arr-?>> x ,@forms)))
 
+;;;###autoload
 (defmacro arr-fn-<?> (&rest forms)
   "Return a `lambda' that threads its argument through FORMS using `arr-<?>'."
   `(lambda (x)
      (arr-<?> x ,@forms)))
 
+;;;###autoload
 (defmacro arr-fn-<?>> (&rest forms)
   "Return a `lambda' that threads its argument through FORMS using `arr-<?>>'."
   `(lambda (x)
      (arr-<?>> x ,@forms)))
 
+;;;###autoload
 (defmacro arr-fn-as-> (name &rest forms)
   "Given NAME, yield `lambda' that threads its arg through FORMS using `arr-as->'."
   `(lambda (x)
