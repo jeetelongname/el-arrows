@@ -1,4 +1,4 @@
-;;; arr.el --- An implementaion of some threading macros -*- lexical-binding: t; -*-
+;;; arr.el --- Modern threading macros -*- lexical-binding: t; -*-
 ;;
 ;; Copyright (C) 2022 Jeetaditya Chatterjee
 ;;
@@ -14,7 +14,9 @@
 ;; This file is not part of GNU Emacs.
 ;;
 ;;; Commentary:
-;; This package adds a bunch of threading macros
+;;
+;; An implementations of threading macros, inspired by other libraries from the
+;; wider Lisp ecosystem.
 ;;
 ;;
 ;;; Code:
