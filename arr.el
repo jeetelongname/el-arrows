@@ -31,7 +31,7 @@
       (list next acc))))
 
 (defun arr--insert-first (arg surround)
-  "Insert ARG into the list form SURROUND as its first argument, after the operator."
+  "Insert ARG into the list SURROUND as its first argument, after the operator."
   (cl-list* (car surround)
             arg
             (cdr surround)))
@@ -118,19 +118,19 @@ and threads it through FORMS at the direction of INSERT-FUN."
                                  ,var))))
 
 (defmacro arr-?> (initial-form &rest forms)
-  "Like `arr->' but will short circut if any of FORMS, incuding INITIAL-FORM, if nil."
+  "Like `arr->' but short-circuits if any FORMS, incuding INITIAL-FORM, are nil."
   (arr--expand-maybe initial-form forms (arr--simple-inserter #'arr--insert-first)))
 
 (defmacro arr-?>> (initial-form &rest forms)
-  "Like `arr->>' but will short circut if any of FORMS, incuding INITIAL-FORM, if nil."
+  "Like `arr->>' but short-circuits if any FORMS, incuding INITIAL-FORM, are nil."
   (arr--expand-maybe initial-form forms (arr--simple-inserter #'arr--insert-last)))
 
 (defmacro arr-<?> (initial-form &rest forms)
-  "Like `arr-<>' but will short circut if any of FORMS, incuding INITIAL-FORM, if nil."
+  "Like `arr-<>' but short-circuits if any FORMS, incuding INITIAL-FORM, are nil."
   (arr--expand-maybe initial-form forms (arr--diamond-inserter #'arr--insert-first)))
 
 (defmacro arr-<?>> (initial-form &rest forms)
-  "Like `arr-<?>' but will short circut if any of FORMS, incuding INITIAL-FORM, if nil."
+  "Like `arr-<?>' but short-circuits if any FORMS, incuding INITIAL-FORM, are nil."
   (arr--expand-maybe initial-form forms (arr--diamond-inserter #'arr--insert-last)))
 
 (defmacro arr->* (&rest forms)
@@ -158,47 +158,47 @@ explicitly use the variable."
 ;;; fn varients
 
 (defmacro arr-fn-> (&rest forms)
-  "Return a `lambda' that takes in one argument and threads it through FORMS using `arr->'."
+  "Return a `lambda' that threads its argument through FORMS using `arr->'."
   `(lambda (x)
      (arr-> x ,@forms)))
 
 (defmacro arr-fn->> (&rest forms)
-  "Return a `lambda' that takes in one argument and threads it through FORMS using `arr->>'."
+  "Return a `lambda' that threads its argument through FORMS using `arr->>'."
   `(lambda (x)
      (arr->> x ,@forms)))
 
 (defmacro arr-fn-<> (&rest forms)
-  "Return a `lambda' that takes in one argument and threads it through FORMS using `arr-<>'."
+  "Return a `lambda' that threads its argument through FORMS using `arr-<>'."
   `(lambda (x)
      (arr-<> x ,@forms)))
 
 (defmacro arr-fn-<>> (&rest forms)
-  "Return a `lambda' that takes in one argument and threads it through FORMS using `arr-<>>'."
+  "Return a `lambda' that threads its argument through FORMS using `arr-<>>'."
   `(lambda (x)
      (arr-<>> x ,@forms)))
 
 (defmacro arr-fn-?> (&rest forms)
-  "Return a `lambda' that takes in one argument and threads it through FORMS using `arr-?>'."
+  "Return a `lambda' that threads its argument through FORMS using `arr-?>'."
   `(lambda (x)
      (arr-?> x ,@forms)))
 
 (defmacro arr-fn-?>> (&rest forms)
-  "Return a `lambda' that takes in one argument and threads it through FORMS using `arr-?>>'."
+  "Return a `lambda' that threads its argument through FORMS using `arr-?>>'."
   `(lambda (x)
      (arr-?>> x ,@forms)))
 
 (defmacro arr-fn-<?> (&rest forms)
-  "Return a `lambda' that takes in one argument and threads it through FORMS using `arr-<?>'."
+  "Return a `lambda' that threads its argument through FORMS using `arr-<?>'."
   `(lambda (x)
      (arr-<?> x ,@forms)))
 
 (defmacro arr-fn-<?>> (&rest forms)
-  "Return a `lambda' that takes in one argument and threads it through FORMS using `arr-<?>>'."
+  "Return a `lambda' that threads its argument through FORMS using `arr-<?>>'."
   `(lambda (x)
      (arr-<?>> x ,@forms)))
 
 (defmacro arr-fn-as-> (name &rest forms)
-  "Take a NAME and return a `lambda' that takes in one argument and threads it through FORMS using `arr-as->'."
+  "Given NAME, yield `lambda' that threads its arg through FORMS using `arr-as->'."
   `(lambda (x)
      (arr-as-> x ,name ,@forms)))
 
