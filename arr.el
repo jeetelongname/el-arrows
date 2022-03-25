@@ -157,6 +157,12 @@ explicitly use the variable."
                   (cons initial-form forms))
      ,var))
 
+(defmacro arr-as->* (name &rest forms)
+  "Like `arr-as->` but the initial-form is passed in as the last in FORMS.
+NAME is taken as the first argument before the FORMS.
+This is meant to be used in composition with `arr->>
+See `arr->*' for a full explaination."
+  `(arr-as-> ,@(append (last forms) name (butlast forms))))
 ;;; fn varients
 
 (defmacro arr-fn-> (&rest forms)
