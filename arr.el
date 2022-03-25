@@ -137,7 +137,7 @@ and threads it through FORMS at the direction of INSERT-FUN."
 
 (defmacro arr->* (&rest forms)
   "Like `arr->' but the initial-form is passed in as the last in FORMS.
-This is meant to be used in composition with `arr->>`,
+This is meant to be used in composition with `arr->>',
 where the argument is passed in as the last one.
 
 Example:
@@ -158,9 +158,9 @@ explicitly use the variable."
      ,var))
 
 (defmacro arr-as->* (name &rest forms)
-  "Like `arr-as->` but the initial-form is passed in as the last in FORMS.
+  "Like `arr-as->' but the initial-form is passed in as the last in FORMS.
 NAME is taken as the first argument before the FORMS.
-This is meant to be used in composition with `arr->>
+This is meant to be used in composition with `arr->>',
 See `arr->*' for a full explaination."
   `(arr-as-> ,@(append (last forms) name (butlast forms))))
 ;;; fn varients
