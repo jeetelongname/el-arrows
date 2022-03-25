@@ -2,18 +2,6 @@
 
 A set of threading macros blatantly rewritten from [[https://github.com/nightfly19/cl-arrows][cl-arrows]].
 
-* Table of Contents :TOC_2_gh:
-- [[#roadmap][Roadmap]]
-  - [[#arrows-to-implement][Arrows to implement]]
-- [[#reference][Reference]]
-  - [[#macros][Macros]]
-  - [[#functions][Functions]]
-- [[#examples][Examples]]
-  - [[#simple-threading][Simple Threading]]
-  - [[#placeholder-example][Placeholder Example]]
-  - [[#fn-example][=fn= Example]]
-  - [[#lambda-short-hands][Lambda Short-hands]]
-
 * Roadmap
 
 - [X] Formalise direction
@@ -21,52 +9,59 @@ A set of threading macros blatantly rewritten from [[https://github.com/nightfly
 - [ ] Implement parts from [[https://srfi.schemers.org/srfi-197/srfi-197.html][srfi 197]]
 - [ ] Implement arrows from the [[https://lexi-lambda.github.io/threading/][racket threading library]]
 - [ ] Implement arrows from the [[https://github.com/rplevy/swiss-arrows][swiss arrows library]]
-- [ ] Add an [[https://hexdocs.pm/elixir/1.13/IO.html#inspect/2][inspect function similar to elixirs]] for easier debugging
+- [X] Add an [[https://hexdocs.pm/elixir/1.13/IO.html#inspect/2][inspect function similar to elixirs]] for easier debugging
 
 ** Arrows to implement
 
 - [X] nil short circuiting arrows, these will return nil if any of the forms
   return nil.
 
-* Reference
+* Table of Contents :TOC_3_gh:
+- [[#roadmap][Roadmap]]
+  - [[#arrows-to-implement][Arrows to implement]]
+- [[#reference][Reference]]
+  - [[#macros][Macros]]
+    - [[#arr--initial-forms-rest-forms][=arr->= (initial-forms &rest forms)]]
+    - [[#arr--initial-form-rest-forms][=arr->>= (initial-form &rest forms)]]
+    - [[#arr--initial-form-rest-forms-1][=arr-<>= (initial-form &rest forms)]]
+    - [[#arr--initial-form-rest-forms-2][=arr-<>>= (initial-form &rest forms)]]
+  - [[#functions][Functions]]
+    - [[#arr-inspect-value-optional-key-print-fn-label][=arr-inspect= (value &optional &key print-fn label)]]
+- [[#examples][Examples]]
+  - [[#fn-example][=fn= Example]]
+  - [[#lambda-short-hands][Lambda Short-hands]]
+
+* TODO Reference
+| Macro name  | default argument placement | placeholders | Description                                                                                           | Nickname      |
+|-------------+----------------------------+--------------+-------------------------------------------------------------------------------------------------------+---------------|
+| =arr-?>=    | argument first.            | no           | will short circuit when a form returns nil                                                            | TODO          |
+| =arr-?>>=   | argument last.             | no           | will short circuit when a form returns nil                                                            | TODO          |
+| =arr-<?>=   | argument first             | yes          | will short circuit when a form returns nil                                                            | TODO          |
+| =arr-<?>>=  | argument last              | yes          | will short circuit when a form returns nil                                                            | TODO          |
+| =arr->*=    | argument first             | no           | initial form will be taken as the last, this is to make it easier to compose in an =arr->>= pipleline | TODO          |
+| =arr-as->=  | argument passed as NAME    | kinda        | Argument is passed down as a NAME. syntax sugar for a recursive let                                   | as            |
+| =arr-as->*= | argument passed as NAME    | kinda        | Takes initial form and passes it in as the last form for composition with =arr->>=. Takes NAME first  | TODO          |
 
 ** Macros
+*** =arr->= (initial-forms &rest forms)
+Inserts the INITIAL-FORM as the *first* argument into FORMS
+The result of each form is inserted as first of the next form.
+Identical to =thread-first=
 
-| Macro name | default argument placement | placeholders | Description                                                         | Nickname      |
-|------------+----------------------------+--------------+---------------------------------------------------------------------+---------------|
-| =arr->=    | argument first.            | no           | Identical to =thread-first=                                         | tip           |
-| =arr->>=   | argument last.             | no           | Identical to =thread-last=                                          | spear         |
-| =arr-<>=   | argument first             | yes          |                                                                     | diamond wand  |
-| =arr-<>>=  | argument last              | yes          |                                                                     | diamond spear |
-| =arr-?>=   | argument first.            | no           | will short circuit when a form returns nil                          | TODO          |
-| =arr-?>>=  | argument last.             | no           | will short circuit when a form returns nil                          | TODO          |
-| =arr-<?>=  | argument first             | yes          | will short circuit when a form returns nil                          | TODO          |
-| =arr-<?>>= | argument last              | yes          | will short circuit when a form returns nil                          | TODO          |
-| =arr-as->= | argument passed as NAME    | kinda        | Argument is passed down as a NAME. syntax sugar for a recursive let | as            |
-
-Each of them has a =fn= variant which allows for "curried" like function syntax.
-They take the name of =arr-fn-NAME= so for example =arr-fn-<>>=.
-
-** Functions
-
-| Function name | Description                                                              | arguments                             |
-|---------------+--------------------------------------------------------------------------+---------------------------------------|
-| =arr-inspect= | a way to quickly print out the value in a pipeline without disrupting it | =value &optional &key print-fn label= |
-
-* Examples
-
-** Simple Threading
-
-Here we are just pushing a number through a contrived pipeline.
+Fn variant: =arr-fn->=
 
 #+begin_src emacs-lisp
-(arr-> 8 (1+) (number-to-string) (string-pad 5) (string-pad 9 nil t))
+(arr-> 8 1+ number-to-string (string-pad 5) (string-pad 9 nil t))
 #+end_src
 
-: "     9      "
+:     9
 
-Here we are using =->>= to pass this list in as the last argument of these maps
-and filters.
+*** =arr->>= (initial-form &rest forms)
+Inserts the INITIAL-FORM as the *last* argument into forms
+The result of each form is then inserted as the last into the next form
+Identical to =thread-last=
+
+Fn variant: =arr-fn->>=
 
 #+begin_src emacs-lisp
 (arr->> '(1 2 3 4 5)
@@ -76,12 +71,25 @@ and filters.
 
 | 2 | 4 | 6 |
 
-** Placeholder Example
+*** =arr-<>= (initial-form &rest forms)
+Inserts the INITIAL-FORM as the *first* argument into FORMS *unless* there is a
+placeholder =<>=
+This is used for functions that do not have uniform argument placement. a
+placement can be used many time in the same form, they will only be executed
+once. Placeholders can't be nested.
 
-If we go back to that last example we see a limitation, we can only thread /last/,
-we could not use =seq-reduce= here as it requires the sequence to be the 2nd
-argument out of 3 (placing it in the middle). This is where diamond variants
-come into play.
+Fn variant: =arr-fn-<>=
+
+EXAMPLE TODO
+
+*** =arr-<>>= (initial-form &rest forms)
+Inserts the INITIAL-FORM as the *last* argument into FORMS *unless* there is a
+placeholder =<>=
+This is used for functions that do not have a uniform argument placement. a
+placement can be used many times in the same form, they will only be executed
+once. Placeholders can't be nested.
+
+Fn variant: =arr-fn-<>>=
 
 #+begin_src emacs-lisp
 (arr-<>> '(1 2 3 4 5)
@@ -91,10 +99,28 @@ come into play.
 #+end_src
 
 : 12
+** Functions
+*** =arr-inspect= (value &optional &key print-fn label)
+ a way to quickly print out the value in a pipeline without disrupting it.
+ Used for debugging.
+ Provide a PRINT-FN which takes in a VALUE and LABEL to use your own interface.
+ return value is discarded.
 
-Here =<>= is a placeholder meaning our value is passed into that spot, this makes
-it very easy to compose functions that might not have uniform positioning of the
-passed argument (like with seq).
+ EXAMPLE TODO
+
+* Examples
+
+# ** Placeholder Example
+
+# If we go back to that last example we see a limitation, we can only thread /last/,
+# we could not use =seq-reduce= here as it requires the sequence to be the 2nd
+# argument out of 3 (placing it in the middle). This is where diamond variants
+# come into play.
+
+
+# Here =<>= is a placeholder meaning our value is passed into that spot, this makes
+# it very easy to compose functions that might not have uniform positioning of the
+# passed argument (like with seq).
 
 ** =fn= Example
 
