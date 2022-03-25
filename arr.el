@@ -148,6 +148,12 @@ Example:
     => 2"
   `(arr-> ,@(append (last forms) (butlast forms))))
 
+(defmacro arr-<>* (&rest forms)
+  "Like `arr-<>' but the initial-form is passed in as the last in FORMS.
+This is meant to be used in compostion with `arr->>',
+See `arr->*' for a full explaination."
+  `(arr-<> ,@(append (last forms) (butlast forms))))
+
 (defmacro arr-as-> (initial-form var &rest forms)
   "Thread INITIAL-FORM through FORMS as VAR to there successor.
 Note that unlike the other threading macros that every call needs to
