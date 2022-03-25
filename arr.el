@@ -216,9 +216,13 @@ See `arr->*' for a full explaination."
 Can have an optional LABEL to identify inspect calls.
 Useful when debugging pipelines.
 pass in your own PRINT-FN to use other interfaces.
+
+PRINT-FN needs to take in value and label in that order.
+the return value is discarded.
+
 Prints to *Messages* by default."
   (if print-fn
-      (funcall print-fn value)
+      (funcall print-fn value label)
     (message "%s: %s" (if label "value" label) (prin1-to-string value)))
   value)
 
