@@ -4,6 +4,7 @@
 ;; cool
 ;;; Code:
 
+(add-to-list 'load-path ".")
 
 (require 'arr)
 
