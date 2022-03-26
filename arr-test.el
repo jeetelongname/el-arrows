@@ -1,10 +1,10 @@
 ;;;  arr-test.el --- Tests for arr -*- lexical-binding: t -*-
 
 ;;; Commentary:
-;; cool
+;; Tests for arrow macros
 ;;; Code:
 
-(add-to-list 'load-path ".")
+(add-to-list 'load-path ".")  ;; hack to get the library to load.
 
 (require 'arr)
 
