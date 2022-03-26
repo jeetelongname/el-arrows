@@ -3,6 +3,9 @@ name: Tests
 on:
   pull_request:
   push:
+    paths-ignore:
+      - '**.org'
+      - 'LICENCE'
     branches:
       - senpai
 
@@ -12,8 +15,9 @@ jobs:
     steps:
       - name: check out repo
         uses: actions/checkout@v2
-      - uses: purcell/setup-emacs@master
+      - name: Install emacs
+        uses: purcell/setup-emacs@master
         with:
           version: 27.2
-      - name: let her rippp
+      - name: Run test suite
         run: emacs -batch -l ert -l arr-test.el -f ert-run-tests-batch-and-exit
