@@ -3,6 +3,7 @@ post_bump_hooks = []
 
 [commit_types]
 dev = { changelog_title = "Development Changes" }
+nit = { changelog_title = "Small Nitpicks" }
 
 [changelog]
 path = "CHANGELOG.md"
