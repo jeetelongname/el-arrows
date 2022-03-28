@@ -156,11 +156,19 @@ and threads it through FORMS at the direction of INSERT-FUN."
 
 (defmacro arr-<?> (initial-form &rest forms)
   "Like `arr-<>' but short-circuits if any FORMS, incuding INITIAL-FORM, are nil."
-  (arr--expand-maybe initial-form forms (arr--diamond-inserter #'arr--insert-first)))
+  (cl-destructuring-bind
+      (placeholder initial-value) (pcase initial-form
+                                    (`(,placeholder ,val) (list placeholder val))
+                                    (val (list '<> val)))
+    (arr--expand-maybe initial-value forms (arr--diamond-inserter* placeholder #'arr--insert-first))))
 
 (defmacro arr-<?>> (initial-form &rest forms)
   "Like `arr-<?>' but short-circuits if any FORMS, incuding INITIAL-FORM, are nil."
-  (arr--expand-maybe initial-form forms (arr--diamond-inserter #'arr--insert-last)))
+  (cl-destructuring-bind
+      (placeholder initial-value) (pcase initial-form
+                                    (`(,placeholder ,val) (list placeholder val))
+                                    (val (list '<> val)))
+    (arr--expand-maybe initial-value forms (arr--diamond-inserter* placeholder #'arr--insert-last))))
 
 (defmacro arr->* (&rest forms)
   "Like `arr->' but the initial-form is passed in as the last in FORMS.
