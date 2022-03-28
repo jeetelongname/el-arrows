@@ -1,0 +1,11 @@
+pre_bump_hooks = []
+post_bump_hooks = []
+
+[commit_types]
+dev = { changelog_title = "Development Changes" }
+
+[changelog]
+path = "CHANGELOG.md"
+authors = []
+
+[bump_profiles]
