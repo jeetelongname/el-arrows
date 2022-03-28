@@ -116,9 +116,13 @@ This only applys to the top level and not in INITIAL-FORM.
 Each such symbol is substituted by the primary result of the form
 accumulated so far, instead of it being inserted as last argument.  Also known
 as diamond spear."
-  (cl-reduce (arr--diamond-inserter #'arr--insert-last)
-             forms
-             :initial-value initial-form))
+  (cl-destructuring-bind
+      (placeholder initial-value) (pcase initial-form
+                                    (`(,placeholder ,val) (list placeholder val))
+                                    (val (list '<> val)))
+    (cl-reduce (arr--diamond-inserter* placeholder #'arr--insert-last)
+               forms
+               :initial-value initial-value)))
 
 ;;; Maybe/nil short-circuiting macros
 ;;;; Internal

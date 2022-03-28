@@ -74,6 +74,12 @@
                           (list 9 <> 11)
                           (seq-map #'1+)
                           (seq-elt <> 1))
+                 11))
+
+  (should (equal (arr-<>> (dwayne-the-rock-johnson 10)
+                          (list 9 dwayne-the-rock-johnson 11)
+                          (seq-map #'1+)
+                          (seq-elt dwayne-the-rock-johnson 1))
                  11)))
 
 (ert-deftest arr-fn->test ()
