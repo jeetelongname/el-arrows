@@ -191,6 +191,26 @@ See `arr->*' for a full explaination."
   `(lambda (x)
      (arr-<>> x ,@forms)))
 
+(defmacro arr-fn-?> (&rest forms)
+  "Return a `lambda' that threads its argument through FORMS using `arr-?>'."
+  `(lambda (x)
+     (arr-?> x ,@forms)))
+
+(defmacro arr-fn-?>> (&rest forms)
+  "Return a `lambda' that threads its argument through FORMS using `arr-?>>'."
+  `(lambda (x)
+     (arr-?>> x ,@forms)))
+
+(defmacro arr-fn-<?> (&rest forms)
+  "Return a `lambda' that threads its argument through FORMS using `arr-<?>'."
+  `(lambda (x)
+     (arr-<?> x ,@forms)))
+
+(defmacro arr-fn-<?>> (&rest forms)
+  "Return a `lambda' that threads its argument through FORMS using `arr-<?>>'."
+  `(lambda (x)
+     (arr-<?>> x ,@forms)))
+
 (defmacro arr-fn-as-> (name &rest forms)
   "Given NAME, yield `lambda' that threads its arg through FORMS using `arr-as->'."
   `(lambda (x)
