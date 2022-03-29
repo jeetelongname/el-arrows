@@ -25,6 +25,13 @@ A set of threading macros blatantly rewritten from [[https://github.com/nightfly
     - [[#arr--initial-form-rest-forms][=arr->>= (initial-form &rest forms)]]
     - [[#arr--initial-form-rest-forms-1][=arr-<>= (initial-form &rest forms)]]
     - [[#arr--initial-form-rest-forms-2][=arr-<>>= (initial-form &rest forms)]]
+    - [[#arr--initial-form-rest-forms-3][=arr-?>= (initial-form &rest forms)]]
+    - [[#arr--initial-form-rest-forms-4][=arr-?>>= (initial-form &rest forms)]]
+    - [[#arr--initial-form-rest-forms-5][=arr-<?>= (initial-form &rest forms)]]
+    - [[#arr--initial-form-rest-forms-6][=arr-<?>>= (initial-form &rest forms)]]
+    - [[#arr--rest-forms][=arr->*= (&rest forms)]]
+    - [[#arr-as--initial-form-name-rest-forms][=arr-as->= (initial-form name &rest forms)]]
+    - [[#arr-as--name-rest-forms][=arr-as->*= (name &rest forms)]]
   - [[#functions][Functions]]
     - [[#arr-inspect-value-optional-key-print-fn-label][=arr-inspect= (value &optional &key print-fn label)]]
 - [[#examples][Examples]]
@@ -32,16 +39,6 @@ A set of threading macros blatantly rewritten from [[https://github.com/nightfly
   - [[#lambda-short-hands][Lambda Short-hands]]
 
 * TODO Reference
-| Macro name  | default argument placement | placeholders | Description                                                                                           | Nickname      |
-|-------------+----------------------------+--------------+-------------------------------------------------------------------------------------------------------+---------------|
-| =arr-?>=    | argument first.            | no           | will short circuit when a form returns nil                                                            | TODO          |
-| =arr-?>>=   | argument last.             | no           | will short circuit when a form returns nil                                                            | TODO          |
-| =arr-<?>=   | argument first             | yes          | will short circuit when a form returns nil                                                            | TODO          |
-| =arr-<?>>=  | argument last              | yes          | will short circuit when a form returns nil                                                            | TODO          |
-| =arr->*=    | argument first             | no           | initial form will be taken as the last, this is to make it easier to compose in an =arr->>= pipleline | TODO          |
-| =arr-as->=  | argument passed as NAME    | kinda        | Argument is passed down as a NAME. syntax sugar for a recursive let                                   | as            |
-| =arr-as->*= | argument passed as NAME    | kinda        | Takes initial form and passes it in as the last form for composition with =arr->>=. Takes NAME first  | TODO          |
-
 ** Macros
 *** =arr->= (initial-forms &rest forms)
 Inserts the INITIAL-FORM as the *first* argument into FORMS
@@ -99,6 +96,78 @@ Fn variant: =arr-fn-<>>=
 #+end_src
 
 : 12
+*** =arr-?>= (initial-form &rest forms)
+Insert the INITIAL-FORM as the *first* argument into FORMS
+The result of each form is inserted as the first of the next forms.
+If a form evaluates to nil, the pipeline stops executing and returns nil
+
+useful when you have a form that can fail and don't want to catch a type error.
+
+Fn variant: =arr-fn-?>=
+
+EXAMPLE TODO
+
+*** =arr-?>>= (initial-form &rest forms)
+Insert the INITIAL-FORM as the *last* argument into FORMS
+The result of each form is inserted as the last of the next forms.
+If a form evaluates to nil, the pipeline stops executing and returns nil
+
+useful when you have a form that can fail and don't want to catch a type error.
+
+Fn variant: =arr-fn-?>>=
+
+EXAMPLE TODO
+
+*** =arr-<?>= (initial-form &rest forms)
+Inserts the INITIAL-FORM as the *first* argument into FORMS *unless* there is a
+placeholder =<>=
+This is used for functions that do not have uniform argument placement. a
+placement can be used many time in the same form, they will only be executed
+once. Placeholders can't be nested.
+
+useful when you have a form that can fail and don't want to catch a type error.
+
+Fn variant: =arr-fn-<?>=
+
+EXAMPLE TODO
+
+*** =arr-<?>>= (initial-form &rest forms)
+Inserts the INITIAL-FORM as the *last* argument into FORMS *unless* there is a
+placeholder =<>=
+This is used for functions that do not have uniform argument placement. a
+placement can be used many time in the same form, they will only be executed
+once. Placeholders can't be nested.
+
+useful when you have a form that can fail and don't want to catch a type error.
+
+Fn variant: =arr-fn-<?>>=
+
+EXAMPLE TODO
+
+*** =arr->*= (&rest forms)
+Inserts the *last* form in FORMS through FORMS as the first argument.
+This is used in composition with [[#arr--initial-form-rest-forms][arr->>]] or any other macro that threads there
+arguments last.
+
+Fn variant: nil
+
+EXAMPLE TODO
+
+*** =arr-as->= (initial-form name &rest forms)
+Inserts the INITIAL-FORM as NAME through FORMS.
+each form *requires* that name be present. there is no implicit threading unlike
+the other macro's
+
+Syntactic sugar for the pattern of redefining a var through a recursive let.
+
+EXAMPLE TODO
+
+*** =arr-as->*= (name &rest forms)
+Inserts the *last* form in FORMS through FORMS as NAME.
+This is like [[#arr--rest-forms][arr->*]] and [[#arr-as--initial-form-name-rest-forms][arr-as->]] with the last form being passed in as the
+inital, being passed through as NAME. use this in composition with [[#arr--initial-form-rest-forms][arr->>]] or any
+other macro that threads there argument last
+
 ** Functions
 *** =arr-inspect= (value &optional &key print-fn label)
  a way to quickly print out the value in a pipeline without disrupting it.
